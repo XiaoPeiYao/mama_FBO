@@ -15,7 +15,7 @@ import torch
 from tensorboardX import SummaryWriter
 
 from options import args_parser
-from core.clientManage import clientManage
+from clientManage import clientManage
 from update import LocalUpdate, test_inference
 from models import MLP, CNNMnist, CNNFashion_Mnist, CNNCifar
 from utils import get_dataset, average_weights, exp_details

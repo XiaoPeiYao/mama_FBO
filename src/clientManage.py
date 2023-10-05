@@ -1,6 +1,6 @@
 import copy
-from core.client import Client
-from util.Fed import *
+from client import Client
+from Fed import *
 
 
 class clientManage():
@@ -61,7 +61,7 @@ class clientManage():
                 param_locals[idx] = copy.deepcopy(param)
             else:
                 param_locals.append(copy.deepcopy(param))
-            loss_locals.append(copy.deepcopy(loss))
+            loss_locals.append(loss)
         # update global weights
         param_glob = FedAvg(param_locals)
         # dx_dp = torch.autograd.grad(list(param_glob.values()), self.preference, create_graph=True)
@@ -79,7 +79,7 @@ class clientManage():
     def maml_outer(self, client_locals):
         list_loss = []
         for client in client_locals:
-            self.preference[client.client_id], val_loss = client.maml_outer_train()
+            val_loss = client.maml_outer_train()
             list_loss.append(val_loss)
         return sum(list_loss) / len(list_loss)
 

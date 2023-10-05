@@ -87,7 +87,7 @@ class Client():
         """
         Inner optimization, each client trains its local model for E epochs
         """
-        self.net0 = copy.deepcopy(self.net)
+        self.net0 = self.net.clone()
         self.net0.train()
         # optimizer = SGD(self.net0.parameters(), lr=self.args.ilr)
         # self.net0.zero_grad()
@@ -97,7 +97,8 @@ class Client():
             for batch_idx, (images, labels) in enumerate(self.ldr_train):
                 images, labels = images.to(
                     self.args.device), labels.to(self.args.device)
-                train_error = self.loss_func(self.net0(images), labels)
+                train_error = self.loss_func(
+                    self.preference, self.net0(images), labels)
                 self.net0.adapt(train_error)
         return self.net0.state_dict(), train_error
 
@@ -127,7 +128,7 @@ class Client():
         """
         Outer optimization, each client trains its local preference for E epochs
         """
-        self.net0 = copy.deepcopy(self.net)
+        self.net0 = self.net.clone()
         # self.net0.train()
         # optimizer = SGD([nn.Parameter(self.preference)], lr=self.args.olr)
         epoch_loss = []
@@ -140,6 +141,6 @@ class Client():
             # loss.backward(retain_graph=True)
             # optimizer.step()
             # preference_grad = grad(loss, self.preference, retain_graph=True)[0]
-            batch_loss.append(loss.item())
+            batch_loss.append(loss)
         epoch_loss.append(sum(batch_loss) / len(batch_loss))
         return sum(epoch_loss) / len(epoch_loss)
